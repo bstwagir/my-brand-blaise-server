@@ -12,7 +12,8 @@ const multer = require("multer");
 const path = require("path");
 const swaggerUI = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
-let bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const cors = require("cors")
 
 
 //parse application/json and look for raw text                                        
@@ -47,12 +48,21 @@ const options = {
 
 		servers: [
 			{
-				url: "http://localhost:5000",
+				url: "https://localhost:5000",
 			},
 		],
 	},
 	apis: ["./routes/*.js"],
 };
+
+app.use(
+  cors({
+      origin: "*",
+      credentials: true,
+      
+  })
+)
+
 
 const specs = swaggerJsDoc(options);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
@@ -60,11 +70,15 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 app.use(express.json());
 app.use("/images", express.static(path.join(__dirname, "/images")));
 mongoose.set('strictQuery', true)
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
+
+app.use((req,res,next)=>{
+  res.setHeader('Access-Control-Allow-Origin','*');
+  res.setHeader('Access-Control-Allow-Methods','GET,POST,PUT,PATCH,DELETE');
+  res.setHeader('Access-Control-Allow-Methods','Content-Type','Authorization');
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+  next(); 
+})
+
 mongoose
   .connect('mongodb+srv://bstwagir:123456A-z@cluster0.rchjodm.mongodb.net/myBrand?retryWrites=true&w=majority', {
     useNewUrlParser: true,
@@ -74,8 +88,7 @@ mongoose
   })
   .then(console.log("Connected to MongoDB"))
   .catch((err) => console.log(err));
-
-
+ 
 
   app.use("/server/auth",authRoute);
   app.use("/server/users",userRoute);

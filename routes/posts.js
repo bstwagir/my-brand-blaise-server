@@ -74,7 +74,7 @@ const upload = multer({ storage: storage })
 const verify = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (authHeader) {
-    const token = authHeader.split(" ")[1];
+    const token = authHeader;
 
     jwt.verify(token, "mySecretKey", (err, user) => {
       if (err) {
@@ -114,16 +114,16 @@ const verify = (req, res, next) => {
  */
 
 //CREATE POST
-router.post("/", upload.single("image"), verify, async (req, res) => {
+router.post("/", verify, async (req, res) => {
 
 
   const newPost = new Post({
-    userId: req.body.userId,
+    userId: req.user.userId,
     title: req.body.title,
     categories: req.body.categories,
     content: req.body.content,
     comments: req.body.comments,
-    //image: req.file.path
+    image: req.body.image,
   });
 if (req.user.isAdmin) {
   try {

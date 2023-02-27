@@ -14,17 +14,16 @@ const authSchema = Joi.object({
 
 const postSchema = Joi.object({
     title: Joi.string().required(),
-    userId: Joi.string().required(),
     content: Joi.string().required(),
     categories: Joi.string().required(),
-    image: Joi.string(),
+    image: Joi.string().required(),
     comment: Joi.array().items(Joi.string()),
     likes: Joi.array().items(Joi.string()),
   })
 
   const contactSchema = Joi.object({
     name: Joi.string().required(),
-    userId: Joi.string().required(),
+    userId: Joi.string(),
     subject: Joi.string(),
     message: Joi.string().required(),
   })

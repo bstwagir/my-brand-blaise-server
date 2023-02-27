@@ -5,6 +5,7 @@ const ContactQuerySchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      unique: false,
     },
     message: {
       type: String,

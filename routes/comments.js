@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken")
 const verify = (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (authHeader) {
-      const token = authHeader.split(" ")[1];
+      const token = authHeader;
   
       jwt.verify(token, "mySecretKey", (err, user) => {
         if (err) {
@@ -232,5 +232,58 @@ router.delete('/:postId/comments/:id', verify, async (req, res) => {
 
 
 })
+
+
+//GET ALL COMMENTS OF A SINGLE BLOG
+
+/**
+ * @swagger
+ * /server/posts/{postId}/comments:
+ *   get:
+ *     summary: Returns the list of all the users
+ *     tags: [Users]
+ *     parameters:
+ *      - in: path
+ *        name: postId
+ *        schema:
+ *          type: string
+ *        required: true
+ *        description: The post id
+ *     responses:
+ *       200:
+ *         description: The list of the users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ */
+
+router.get("/:postId/comments", async (req, res) => {
+	let postId=req.params.postId;
+	if(!mongoose.Types.ObjectId.isValid(postId)){
+		return res.status(400).send({
+	  		message:'Invalid blog id',
+	  		data:{}
+	  	});
+	}
+    Post.findOne({_id:postId}).then(async (blog)=>{
+		if(!blog){
+			return res.status(400).send({
+				message:'No blog found',
+				data:{}
+            });}
+            else{   
+	try {
+	  const comments = await Comment.find();
+	  res.status(200).json(comments);
+	} catch (err) {
+	  res.status(500).json(err);
+	}
+  };
+})
+})
+
 
 module.exports = router;

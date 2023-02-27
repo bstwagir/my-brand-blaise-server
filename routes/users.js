@@ -43,7 +43,7 @@ const jwt = require("jsonwebtoken")
 const verify = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (authHeader) {
-    const token = authHeader.split(" ")[1];
+    const token = authHeader;
 
     jwt.verify(token, "mySecretKey", (err, user) => {
       if (err) {
@@ -149,7 +149,9 @@ router.delete("/:id", verify, async (req, res) => {
  *         description: The user was not found
  */
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", verify, async (req, res) => {
+  
+  if (req.body.userId === req.params.id || req.user.isAdmin)
   try {
     const user = await User.findById(req.params.id);
     const { password, ...others } = user._doc;

@@ -17,10 +17,10 @@ const PostSchema = new mongoose.Schema(
     },
     userId: {
       type: String,
-      required: true,
+      required: false,
     },
     categories: {
-      type: Array,
+      type: String,
       required: false,
     },
     comments: [{ type: mongoose.Schema.Types.ObjectId, 
