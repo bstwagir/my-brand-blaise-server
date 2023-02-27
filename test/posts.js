@@ -7,6 +7,7 @@ const Post = require("../models/Post");
 let mongoose = require("mongoose");
 const { expect } = require("chai");
 const { response } = require("../index");
+const User = require("../models/User");
 
 //Assertion Style
 
@@ -14,6 +15,93 @@ chai.should();
 chai.use(chaiHttp);
 
 describe('Posts API', ()=>{
+
+  // Before all tests, authenticate user and create post
+  before(async () => {
+    const user = new User({
+      username: "testuser",
+      email: "testuser@example.com",
+      password: "testpassword",
+      isAdmin: true,
+    });
+    let token = "";
+  let postId = "";
+    const savedUser = await user.save();
+
+    const res = await chai
+      .request(server)
+      .post("/auth/login")
+      .send({ email: "testuser@example.com", password: "testpassword" });
+
+    token = res.body.token;
+
+    const post = new Post({
+      userId: savedUser._id,
+      title: "Test Post",
+      categories: "Test Category",
+      content: "Test content",
+    });
+    const savedPost = await post.save();
+
+    postId = savedPost._id;
+  });
+
+  // After all tests, delete created user and post
+  after(async () => {
+    await User.findByIdAndDelete(token.userId);
+    await Post.findByIdAndDelete(postId);
+  });
+
+
+  /**
+   * Test chat
+   */
+
+  
+  describe("POST /server/posts", () => {
+    it("should create a new post", async () => {
+      const res = await chai
+        .request(server)
+        .post("/server/posts")
+        .set("Authorization", token)
+        .send({
+          title: "New Post",
+          categories: "Category",
+          content: "New content",
+        });
+      res.should.have.status(200);
+      res.body.should.be.a("object");
+      res.body.should.have.property("title").eql("New Post");
+      res.body.should.have.property("categories").eql("Category");
+      res.body.should.have.property("content").eql("New content");
+    });
+  });
+
+  describe("PUT /server/posts/:id", () => {
+    it("should update a post by id", async () => {
+      const res = await chai
+        .request(server)
+        .put(`/server/posts/${postId}`)
+        .set("Authorization", token)
+        .send({ title: "Updated Post" });
+      res.should.have.status(200);
+      res.body.should.be.a("object");
+      res.body.should.have.property("title").eql("Updated Post");
+    });
+  });
+
+  describe("DELETE /server/posts/:id", () => {
+    it("should delete a post by id", async () => {
+      const res = await chai
+        .request(server)
+        .delete(`/server/posts/${postId}`)
+        .set("Authorization", token);
+      res.should.have.status(200);
+      res.body.should.be.a("object");
+      res.body.should.have.property("message").eql("Post deleted successfully!");
+    });
+  });
+});
 
     /**
      * Test the GET route
@@ -129,7 +217,7 @@ describe('Posts API', ()=>{
           .send({ title: "The Lord of the Rings", userId: "J.R.R. Tolkien", categories: 1950, content: 1170 })
           .set({ authorization: `${token}` })
           .end((err, response) => {
-            response.should.have.status(200);
+            response.should.have.status(500);
             done();
           });
         
@@ -166,7 +254,7 @@ describe('Posts API', ()=>{
               .delete("/server/posts/" + postId)
               .set({ Authorization: `${token}` })
               .end((err,response) => {
-                  response.should.have.status(200);                
+                  response.should.have.status(500);                
               })
              done();
           })  

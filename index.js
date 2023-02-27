@@ -13,7 +13,7 @@ const path = require("path");
 const swaggerUI = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
 const bodyParser = require('body-parser');
-const cors = require("cors")
+
 
 
 //parse application/json and look for raw text                                        
@@ -48,20 +48,13 @@ const options = {
 
 		servers: [
 			{
-				url: "https://localhost:5000",
+				url: "http://localhost:5000",
 			},
 		],
 	},
 	apis: ["./routes/*.js"],
 };
 
-app.use(
-  cors({
-      origin: "*",
-      credentials: true,
-      
-  })
-)
 
 
 const specs = swaggerJsDoc(options);

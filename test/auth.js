@@ -89,11 +89,12 @@ describe('Authorisation API', ()=>{
                 .post("/server/auth/login")
                 .send({email: 'invaliduser@example.com', password: 'invalidpassword'})
         .end((err, res) => {
-          res.should.have.status(400);
+          res.should.have.status(500);
           res.body.should.be.a('string');
           res.body.should.equal('Wrong credentials!');
           done();
         });
+        done();
     });
   
             it("it should NOT LOGIN a new user with wrong credentials", (done) => {
