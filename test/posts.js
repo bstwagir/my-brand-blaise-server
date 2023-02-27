@@ -46,11 +46,6 @@ describe('Posts API', ()=>{
     postId = savedPost._id;
   });
 
-  // After all tests, delete created user and post
-  after(async () => {
-    await User.findByIdAndDelete(token.userId);
-    await Post.findByIdAndDelete(postId);
-  });
 
 
   /**
@@ -302,4 +297,4 @@ describe('Posts API', ()=>{
               
         })
       })
-    })
+

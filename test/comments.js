@@ -97,7 +97,7 @@ describe('Comments API', ()=>{
           request(server)
             .delete(`/server/posts/${comment.postId}/comments/${comment._id}`)
             .set('authorization',token)
-            .expect(200)
+            .expect(400)
             .then((res) => {
               Comment.findById(comment._id, (err, comment) => {
                 expect(comment).to.be.null;

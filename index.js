@@ -13,6 +13,14 @@ const path = require("path");
 const swaggerUI = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
 const bodyParser = require('body-parser');
+const cors = require("cors");
+
+app.use(
+  cors({
+    origin:"*",
+    credentials: true,
+  })
+)
 
 
 
@@ -68,7 +76,6 @@ app.use((req,res,next)=>{
   res.setHeader('Access-Control-Allow-Origin','*');
   res.setHeader('Access-Control-Allow-Methods','GET,POST,PUT,PATCH,DELETE');
   res.setHeader('Access-Control-Allow-Methods','Content-Type','Authorization');
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next(); 
 })
 
