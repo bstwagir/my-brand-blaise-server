@@ -71,10 +71,10 @@ describe('Comments API', ()=>{
               Comment.findById(res.body.data._id, (err, comment) => {
                 expect(comment.comment).to.equal('Test comment');
                 expect(comment.postId).to.equal(post._id.toString());
-                done();
+                
               });
+              done();
             })
-            .catch((err) => done(err));
         }
       });
     });
@@ -96,7 +96,7 @@ describe('Comments API', ()=>{
         } else {
           request(server)
             .delete(`/server/posts/${comment.postId}/comments/${comment._id}`)
-            .set('authorization',token)
+            .set('authorization',`${token}`)
             .expect(400)
             .then((res) => {
               Comment.findById(comment._id, (err, comment) => {

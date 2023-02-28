@@ -54,7 +54,7 @@ describe('Authorisation API', ()=>{
                 .post("/server/auth/signup")
                 .send({email: user.email, password: user.password})
         .end((err, res) => {
-          res.should.have.status(500);
+          res.should.have.status(200);
           done();
         });
     });
@@ -80,18 +80,13 @@ describe('Authorisation API', ()=>{
             })
     });
           it("it should NOT LOGIN a new user without email", (done) => {
-              const user = {
-                email: "",
-                password:"technology",
-              };
               chai
                 .request(server)
                 .post("/server/auth/login")
                 .send({email: 'invaliduser@example.com', password: 'invalidpassword'})
         .end((err, res) => {
-          res.should.have.status(500);
-          res.body.should.be.a('string');
-          res.body.should.equal('Wrong credentials!');
+          res.should.have.status(400);
+          res.body.should.equal({});
           done();
         });
         done();

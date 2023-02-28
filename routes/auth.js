@@ -96,13 +96,16 @@ router.post("/login", async (req, res) => {
     const result = await authSchema.validateAsync(req.body);
 
     const user = await User.findOne({ email: req.body.email });
-    !user && res.status(400).json("Wrong credentials!");
+    if (!user) return res.status(400).json("Wrong credentials!");
 
     const validated = await bcrypt.compare(req.body.password, user.password);
-    !validated && res.status(400).json("Wrong credentials!");
+    if (!validated) return res.status(400).json("Wrong credentials!");
     
+
     const generateAccessToken = (user) => {
-      return jwt.sign({ email: user.email, isAdmin: user.isAdmin, userId: user._id }, "mySecretKey",);
+    return jwt.sign({ email: user.email, isAdmin: user.isAdmin, userId: user._id }, "mySecretKey",);
+
+      
     };
     const accessToken = generateAccessToken(user);
     const { password, ...others } = user._doc;
